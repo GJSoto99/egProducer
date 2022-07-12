@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "Plot_Tracking_Comparisons_matched_histos.C": "cpp",
+        "Plot_Resolution_and_response.C": "cpp"
+    }
+}
