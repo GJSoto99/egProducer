@@ -73,6 +73,7 @@ class egTreeProducer : public edm::one::EDAnalyzer<edm::one::SharedResources, ed
 		std::vector<float>  electron_phi;
 		std::vector<float>  electron_mass;	//new
 		std::vector<int>    electron_charge;	//new
+		std::vector<float>  electron_energy;	//new
 		
 
 		int run_, lumi_, event_;
@@ -109,6 +110,7 @@ void egTreeProducer::beginJob()
     tree->Branch("electron_phi", "std::vector<float>", &electron_phi , 32000, 0);
     tree->Branch("electron_mass", "std::vector<float>", &electron_mass , 3200, 0);	//new
     tree->Branch("electron_charge", "std::vector<int>", &electron_charge , 3200, 0); 	//new
+    tree->Branch("electron_energy", "std::vector<float>", &electron_energy , 3200, 0);  //new
 
     return ;
 }
@@ -132,6 +134,7 @@ void egTreeProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	electron_phi.clear();
 	electron_mass.clear();		//new
 	electron_charge.clear();	//new
+	electron_energy.clear();	//new
 
 
     Handle<vector<reco::Electron>> electronH;
@@ -150,6 +153,7 @@ void egTreeProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		electron_phi.push_back( eleItr->phi() );
 		electron_mass.push_back( eleItr->mass());	//new
 		electron_charge.push_back( eleItr->charge());	//new
+		electron_energy.push_back(eleItr->energy());	//New
 	} 
 
     tree->Fill();	
