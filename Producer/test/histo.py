@@ -1,6 +1,5 @@
 import ROOT
 import numpy as np
-import vector as vec
 
 f1 = ROOT.TFile("output.root", "OPEN")
 
@@ -10,52 +9,48 @@ binning =  np.array((0.,15.,30.,45.,60.,75.,90.,105.,120.,135.,150.,165.,180.,19
 h1 = ROOT.TH1F("h1",";pT [GeV];410/15 ",NBin,binning)
 h2 = ROOT.TH1F("h2","Electron phi",10,-4,4)
 h3 = ROOT.TH1F("h3","Electron eta",10,-4,4)
-h4 = ROOT.TH1F("h4","Di-Electron invariant mass",10,0,0.01)
-h5 = ROOT.TH1F("h5","Di-Electron invariant mass",10,0,0.01)
+#RIP h4
+h5 = ROOT.TH1F("h5","Di-Electron invariant mass",10,0,100)
+
+electron1 = ROOT.TLorentzVector()
+electron2 = ROOT.TLorentzVector()
+eTot = ROOT.TLorentzVector()
 
 for evt in f1.Get("egammaReconstruction/tree"):
 	
 #------------------ELECTRON_PT--------------------#
 	
 	for i in range(0,len(evt.electron_pt)):
+
 		h1.Fill(evt.electron_pt[i])
 
 #------------------ELECTRON_PHI-------------------#
 
-	for j in range(0,len(evt.electron_phi)):
-		h2.Fill(evt.electron_phi[j])
+		h2.Fill(evt.electron_phi[i])
 
 #------------------ELECTRON_ETA-------------------#
 
-	for k in range(0,len(evt.electron_eta)):
-		h3.Fill(evt.electron_eta[k])
+		h3.Fill(evt.electron_eta[i])
 
 #-----------Di-Electron Invariant Mass------------#
 		
-	for e in range(0, len(evt.electron_mass)):
+		electron1.SetPtEtaPhiM(evt.electron_pt[i], evt.electron_eta[i], evt.electron_phi[i], evt.electron_mass[i])
+	        electron2.SetPtEtaPhiM(evt.electron_pt[i], evt.electron_eta[i], evt.electron_phi[i], evt.electron_mass[i])
 
-	  if len(evt.electron_mass) != 2:
-		continue
+		eTot = electron1 + electron2
 
-	  if evt.electron_charge[0] == evt.electron_charge[1]:
-		#continue
+		print("Electron Pt")
+		print(eTot.Pt())
+		print("Electron Eta")
+		print(eTot.Eta())
+		print("Electron Phi")
+		print(eTot.Phi())
+		print("Electron M")
+		print(eTot.M()) 
 
-	  #if (evt.electron_mass[1] + evt.electron_mass[0] < 0.0020) and (evt.electron_mass[1] + evt.electron_mass[0] > 0.0005):
-		h4.Fill(evt.electron_mass[e])
-		
-#------------------------------------------------#
-
-v1 = vec.obj(electron_pt,electron_phi,electron_eta,electron_mass)
-v2 = vec.obj(electron_pt,electron_phi,electron_eta,electron_mass)
-
-#for ent in f1.Get("egammaReconstruction/tree"): 
-
-    #for a in range(0, len(ent.electron_mass)): 
-    
-	  #m = v1.electron_mass[a] + v2.electron_mass[a]
+		h5.Fill(eTot.M())
 
 #------------------------------------------------#
-
 c1 = ROOT.TCanvas("c1","c1",1000,1000)
 
 h1.SetTitle("Electron pt")
@@ -78,7 +73,7 @@ c2.Draw()
 
 c2.SaveAs("Electron_phi_2000.png")
 
-c3 =ROOT.TCanvas("c3","c3",1000,1000)
+c3 = ROOT.TCanvas("c3","c3",1000,1000)
 
 h3.SetTitle("Electron #eta")
 h3.GetXaxis().SetTitle("#eta(#theta)")
@@ -89,15 +84,15 @@ c3.Draw()
 
 c3.SaveAs("Electron_eta_2000.png")
 
-c4 =ROOT.TCanvas("c4","c4",1000,1000)
+c5 = ROOT.TCanvas("c5","c5",1000,1000)
 
-h4.SetTitle("Di-Electron Invariant Mass")
-h4.GetXaxis().SetTitle("Mass")
-h4.GetYaxis().SetTitle("Events")
-h4.Draw("HIST")
-h4.Draw("C9E1 SAME")
-c4.Draw()
+h5.SetTitle("Di-Electron Invariant Mass")
+h5.GetXaxis().SetTitle("Mass")
+h5.GetYaxis().SetTitle("Events")
+h5.Draw("HIST")
+h5.Draw("C9E1 SAME")
+c5.Draw()
 
-c4.SaveAs("Electron_Di-Electron_2000.png")
+c5.SaveAs("Electron_Di-Electron_TLV_2000.png")
 
 f1.Close()
